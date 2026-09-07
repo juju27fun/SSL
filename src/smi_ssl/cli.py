@@ -29,7 +29,7 @@ def train_arrays(data: Path, output: Path, config_path: Path | None, profile: st
     p=config['training']['profiles'][profile]
     datasets=(EventArrays(payload,'train',p['max_simulation_train']),
               EventArrays(payload,'val',p['max_simulation_validation']),
-              EventArrays(payload,'real_val'))
+              EventArrays(payload,'real_val',per_class_limit=p['max_real_validation_per_class']))
     return train_bead_ssl(config,simulation_root=None,real_root=None,output_dir=output,
                           profile_name=profile,device_name=device,prepared_datasets=datasets)
 

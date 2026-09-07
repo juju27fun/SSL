@@ -13,11 +13,17 @@ SPLITS = ('train', 'val', 'real_val')
 
 
 class EventArrays(Dataset):
-    def __init__(self, payload: dict[str, np.ndarray], split: str, limit: int | None = None):
+    def __init__(self, payload: dict[str, np.ndarray], split: str, limit: int | None = None, per_class_limit: int | None = None):
         if split not in SPLITS:
             raise ValueError(f'Unsupported split: {split}')
         self.payload = payload
         self.indices = np.flatnonzero(payload['split'] == split)
+        if per_class_limit is not None:
+            if per_class_limit <= 0:
+                raise ValueError("per_class_limit must be positive")
+            labels = payload["labels"][self.indices]
+            self.indices = np.concatenate([self.indices[labels == label][:per_class_limit]
+                                           for label in np.unique(labels)])
         if limit is not None:
             self.indices = self.indices[:limit]
         if not self.indices.size:

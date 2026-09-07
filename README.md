@@ -37,7 +37,7 @@ uv run smi-ssl cluster --embeddings .cache/demo/embeddings.npz --output .cache/d
 
 Use a new output path to repeat a command; existing outputs are never silently replaced. The toy third split stands in for the real-validation interface and is synthetic too. The displayed losses/ARI are software diagnostics, not scientific results.
 
-The smoke profile runs one epoch. The full preset has 30 epochs, batch size 32, AdamW learning rate 0.0003, weight decay 0.01 and gradient clipping at 1.0, matching the retained U-Net run's override. CPU smoke uses one PyTorch thread; full training can select `--device cuda` with a suitable PyTorch/CUDA installation. GPU execution and research-scale convergence are not validated by the CPU smoke.
+The smoke profile runs one epoch and caps real-validation monitoring at two rows per supplied class label; unlabeled rows (`-1`) form one group for this cap. Full monitoring is uncapped. The full preset has 30 epochs, batch size 32, AdamW learning rate 0.0003, weight decay 0.01 and gradient clipping at 1.0, matching the retained U-Net run's override. CPU smoke uses one PyTorch thread; full training can select `--device cuda` with a suitable PyTorch/CUDA installation. GPU execution and research-scale convergence are not validated by the CPU smoke.
 
 ## Signal path and ownership
 

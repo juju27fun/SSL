@@ -83,3 +83,12 @@ def test_prepare_manifest_crops_and_rejects_leakage_without_output(tmp_path):
     with pytest.raises(ValueError,match='crosses splits'):
         prepare_manifest(manifest,tmp_path,bad)
     assert not bad.exists()
+
+
+def test_real_validation_cap_applies_per_class(tmp_path):
+    path=tmp_path/'demo.npz';make_demo(path)
+    data=load_arrays(path)
+    bounded=EventArrays(data,'real_val',per_class_limit=1)
+    assert len(bounded)==3
+    assert sorted(data['labels'][bounded.indices].tolist())==[0,1,2]
+    assert len(EventArrays(data,'real_val'))==6
