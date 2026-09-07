@@ -1,1 +1,2 @@
 include README.md PROVENANCE.json uv.lock .python-version
+recursive-include tests/fixtures *.json

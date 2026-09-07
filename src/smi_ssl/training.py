@@ -501,6 +501,9 @@ def train_bead_ssl(
     monitoring_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     profile, limits = _profile(config, profile_name)
+    evaluation_policy = str(config["masking"]["evaluation_policy"])
+    if evaluation_policy not in {"P25", "CYCLIC25"}:
+        raise ValueError(f"Unsupported evaluation policy: {evaluation_policy}")
     seed = int(config["training"]["seed"])
     seed_everything(seed)
     if prepared_datasets is None:
@@ -557,6 +560,7 @@ def train_bead_ssl(
         config,
         device,
         mask_seed=seed,
+        evaluation_policy=evaluation_policy,
         max_examples=0,
     )
     matched_policy = str(config["masking"]["training_policy"])
@@ -644,6 +648,7 @@ def train_bead_ssl(
             config,
             device,
             mask_seed=seed,
+            evaluation_policy=evaluation_policy,
             max_examples=0,
         )
         record = {
@@ -696,6 +701,7 @@ def train_bead_ssl(
         config,
         device,
         mask_seed=seed,
+        evaluation_policy=evaluation_policy,
     )
     real_metrics, real_examples = evaluate_reconstruction(
         model,
@@ -703,6 +709,7 @@ def train_bead_ssl(
         config,
         device,
         mask_seed=seed,
+        evaluation_policy=evaluation_policy,
     )
     initial_mse = initial_metrics["model"]["masked_mse"]
     relative_improvement = (initial_mse - best_mse) / max(initial_mse, 1.0e-12)
@@ -731,7 +738,7 @@ def train_bead_ssl(
         "seed": seed,
         "loss_cell": config["loss"]["selected_cell"],
         "training_mask_policy": config["masking"]["training_policy"],
-        "evaluation_mask_policy": config["masking"]["evaluation_policy"],
+        "evaluation_mask_policy": evaluation_policy,
         "architecture": str(config["model"]["architecture"]),
         "trainable_parameters": sum(p.numel() for p in model.parameters() if p.requires_grad),
         "mask_encoding": config["model"]["mask_encoding"],

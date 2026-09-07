@@ -1,31 +1,23 @@
 name: CPU checks
-on:
-  workflow_dispatch:
-    inputs:
-      models_repository:
-        description: GitHub owner/repository providing Models
-        required: true
-        type: string
-      models_ref:
-        description: Models commit or tag to verify against
-        required: true
-        type: string
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: SSL
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.models_repository }}
-          ref: ${{ inputs.models_ref }}
-          path: Models
       - uses: astral-sh/setup-uv@v6
+      # Models is fetched at the immutable Git revision in pyproject.toml/uv.lock.
       - run: uv sync --locked
-        working-directory: SSL
       - run: uv run pytest -q
-        working-directory: SSL
       - run: uv build
-        working-directory: SSL
+      - name: Check wheel provenance and README metadata
+        run: |
+          uv run python - <<'PYCODE'
+          import glob, zipfile
+          with zipfile.ZipFile(glob.glob('dist/*.whl')[0]) as archive:
+              assert any(name.endswith('/PROVENANCE.json') for name in archive.namelist())
+              metadata = next(name for name in archive.namelist() if name.endswith('/METADATA'))
+              assert b'Description-Content-Type: text/markdown' in archive.read(metadata)
+          PYCODE

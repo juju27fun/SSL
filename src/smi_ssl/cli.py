@@ -9,6 +9,8 @@ import torch
 from .configuration import load_config
 from .data import EventArrays, load_arrays, make_demo, prepare_manifest
 from .training import train_bead_ssl
+from .monitoring import fixed_class_proportional_monitor_indices
+from torch.utils.data import Subset
 from .checkpoints import load_checkpoint
 from .embedding import extract_embeddings
 from .decimation import normalize_signal
@@ -30,8 +32,19 @@ def train_arrays(data: Path, output: Path, config_path: Path | None, profile: st
     datasets=(EventArrays(payload,'train',p['max_simulation_train']),
               EventArrays(payload,'val',p['max_simulation_validation']),
               EventArrays(payload,'real_val',per_class_limit=p['max_real_validation_per_class']))
+    monitor_config = config['training']['matched_monitoring']
+    monitors, metadata = [], {}
+    for dataset, tag, key in zip(datasets[:2], ('train','val'), ('train','validation'), strict=True):
+        indices, selected = fixed_class_proportional_monitor_indices(dataset,
+            max_samples=int(monitor_config['samples_per_split']),
+            seed=int(config['training']['seed']), split_tag=tag)
+        monitors.append(Subset(dataset, indices));metadata[key] = selected
+    metadata.update(protocol='matched-policy-fixed-monitor-v1',
+                    evaluation_policy=config['masking']['training_policy'],
+                    cyclic_schedule='all_unique_passes_per_sample')
     return train_bead_ssl(config,simulation_root=None,real_root=None,output_dir=output,
-                          profile_name=profile,device_name=device,prepared_datasets=datasets)
+                          profile_name=profile,device_name=device,prepared_datasets=datasets,
+                          monitoring_datasets=tuple(monitors), monitoring_metadata=metadata)
 
 
 def main() -> None:
@@ -60,13 +73,15 @@ def main() -> None:
     elif args.command=='cluster':
         with np.load(args.embeddings,allow_pickle=False) as data:
             features=data['embeddings'];labels=data['labels'];splits=data['split'];groups=data['groups'];ids=data['ids']
-        if labels.ndim!=1 or len(labels)!=len(features) or set(labels)!=set(range(args.classes)):
-            raise ValueError('Labels must cover integer class IDs 0..classes-1')
+        if labels.ndim!=1 or len(labels)!=len(features) or not np.issubdtype(labels.dtype,np.integer):
+            raise ValueError('Labels must be an integer vector matching embeddings')
         train=splits=='train';val=splits=='val'
         if not train.any() or not val.any(): raise ValueError('Train and val partitions are required')
         if set(groups[train]) & set(groups[val]) or set(ids[train]) & set(ids[val]):
             raise ValueError('Train/validation group or ID overlap')
         fit=val if args.protocol=='transductive' else train
+        if args.classes < 2 or set(labels[fit]) != set(range(args.classes)) or not set(labels[val]).issubset(range(args.classes)):
+            raise ValueError('Fit labels must cover 0..classes-1; scored labels must belong to these classes')
         prepared=prepare_latents(features[fit],features[val])
         parts=[evaluate_partition(prepared,labels[fit],labels[val],seed=seed,n_classes=args.classes) for seed in (41,42,43)]
         result={'protocol':args.protocol,'fit_population':'val' if args.protocol=='transductive' else 'train','scored_population':'val','claim_boundary':'same-population descriptive clustering' if args.protocol=='transductive' else 'held-out validation with train-fitted transforms and Hungarian mapping','summary':summarize_partitions(parts),'partitions':parts}

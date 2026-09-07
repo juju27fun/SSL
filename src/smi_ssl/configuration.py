@@ -17,6 +17,10 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
         raise ValueError("The retained protocol uses per-window z-score normalization")
     if config["masking"]["training_policy"] not in {"P25", "CYCLIC25"}:
         raise ValueError("Unknown masking policy")
+    if config["masking"]["evaluation_policy"] not in {"P25", "CYCLIC25"}:
+        raise ValueError("Unknown evaluation masking policy")
+    if int(config["training"]["matched_monitoring"]["samples_per_split"]) < 1:
+        raise ValueError("Matched monitoring size must be positive")
     if config["training"]["checkpoint_selection"] != "fixed_final":
         raise ValueError("The retained experiment selects the fixed final checkpoint")
     return config

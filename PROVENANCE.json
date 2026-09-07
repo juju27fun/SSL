@@ -191,5 +191,18 @@
       },
       "destination": "src/smi_ssl/presets/unet_mad4d.json"
     }
-  ]
+  ],
+  "audit_corrections": {
+    "monitor_selection": {
+      "source": "p3_ssl/bead_ssl_v2.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "5000dc740a225d39939adedb2727a2ed0da12e9bb992113996afabacaeaa7c5d",
+      "lines": [
+        52,
+        103
+      ],
+      "adaptation": "Read explicit EventArrays IDs/labels; 0/1/2 map to physical classes, unknown labels remain explicit extra strata. Preserve source quota, hash and split-tag rules."
+    },
+    "evaluation": "Forward the configured evaluation policy to all standard evaluator calls; source default P25 previously ignored the public setting. Matched monitors continue to use the training policy."
+  }
 }
