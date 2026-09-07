@@ -1,0 +1,195 @@
+{
+  "scope": "Retained MAD4d U-Net SSL protocol; original computations copied with explicit dataset/model boundaries. No private data or checkpoints included.",
+  "files": [
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/decimation.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "3081f52814341e98859cc0d4e0c8f64385a219b433ea4b8a9ffadd0cfa763bea",
+      "source_ranges": [],
+      "destination": "src/smi_ssl/decimation.py",
+      "adaptations": []
+    },
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/signal_preprocessing.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "afa64fbe4a1b22e4901fe1e7b5e76534103a91b3a2f7397bc7f4d622ba034d54",
+      "source_ranges": [],
+      "destination": "src/smi_ssl/signal_preprocessing.py",
+      "adaptations": [
+        "from p3_ssl.decimation import -> from .decimation import"
+      ]
+    },
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/masking.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "4284e65b8829e144723fc4a9c3694c511fcc78759de75573913df644d4cad471",
+      "source_ranges": [],
+      "destination": "src/smi_ssl/masking.py",
+      "adaptations": []
+    },
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/losses.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "016d7ba4420201a4a928b728c7b39ea6d358f9ab953111f84182cd58b9e40fb2",
+      "source_ranges": [],
+      "destination": "src/smi_ssl/losses.py",
+      "adaptations": []
+    },
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/study_training.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "b42543300017c8bbcd8c54f3453b7e1521986786016aa1bc935fbdaa56710018",
+      "source_ranges": [
+        [
+          121,
+          132
+        ],
+        [
+          135,
+          150
+        ],
+        [
+          153,
+          162
+        ]
+      ],
+      "destination": "src/smi_ssl/baselines.py",
+      "adaptations": []
+    },
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/bead_ssl.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "8fb5fa91b4cb4d76652c26513e0207ab906d217917ada571682b64fc56334d63",
+      "source_ranges": [
+        [
+          39,
+          43
+        ],
+        [
+          198,
+          203
+        ],
+        [
+          246,
+          286
+        ],
+        [
+          289,
+          307
+        ],
+        [
+          310,
+          339
+        ],
+        [
+          342,
+          363
+        ],
+        [
+          366,
+          393
+        ],
+        [
+          396,
+          420
+        ],
+        [
+          423,
+          432
+        ],
+        [
+          435,
+          454
+        ],
+        [
+          457,
+          459
+        ],
+        [
+          462,
+          504
+        ],
+        [
+          507,
+          524
+        ],
+        [
+          527,
+          678
+        ],
+        [
+          681,
+          687
+        ],
+        [
+          690,
+          1017
+        ]
+      ],
+      "destination": "src/smi_ssl/training.py",
+      "adaptations": [
+        "model: MomentLikeReconstructor -> model: torch.nn.Module",
+        "weights_only=False -> weights_only=True",
+        "Remove unreachable legacy registry-backed dataset constructors; require prepared datasets. Preserve original optimizer/masks/loss/evaluation/checkpoint loop."
+      ]
+    },
+    {
+      "source_repository": "Internship_jlb_2026",
+      "source_path": "src/internship_workspace/mad_unsupervised_latent_clustering.py",
+      "source_revision": "cd540dd2e791a820f83b327b7ae16b2ce681be39",
+      "source_sha256": "d0d1be0f9830cf83fe472372aa1fcbd0f4783959cfa4cc333cc933152ce6929c",
+      "source_ranges": [],
+      "destination": "src/smi_ssl/clustering.py",
+      "adaptations": []
+    },
+    {
+      "source_repository": "bead-class-latent-probe-r1",
+      "source_path": "p3_ssl/bead_representation_benchmark.py",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "source_sha256": "78003db4945b01a506e8fcd88555d2708eef83c71f48c201b15ce8bece7da921",
+      "source_ranges": [
+        [
+          183,
+          204
+        ]
+      ],
+      "destination": "src/smi_ssl/embedding.py",
+      "adaptations": []
+    },
+    {
+      "source_repository": "Internship_jlb_2026",
+      "source_path": "src/internship_workspace/mad_conv1dgap_training.py",
+      "source_revision": "cd540dd2e791a820f83b327b7ae16b2ce681be39",
+      "source_sha256": "6954f0c9a02d066cb2538014939fddc14149ac2d490634c4894132e9d999ba9d",
+      "source_ranges": [
+        [
+          178,
+          191
+        ],
+        [
+          194,
+          216
+        ]
+      ],
+      "destination": "src/smi_ssl/conv_preprocessing.py",
+      "adaptations": []
+    },
+    {
+      "source_path": "configs/bead_ssl_mad4d_unet_cyclic25_v1.yaml + ancestors",
+      "source_revision": "9a83db91d174cf92a859131a21bfe59bbb68f4be",
+      "run_id": "bead-ssl-v2-mad4d-unet-cyclic25-full-s42-e30-r1",
+      "run_manifest_sha256": "e1cab4cb03dc2196808bcdadf6f67f1342e4359bf9921c64cde70acaa69c1995",
+      "verified_overrides": {
+        "epochs": 30,
+        "training_mask_policy": "CYCLIC25"
+      },
+      "destination": "src/smi_ssl/presets/unet_mad4d.json"
+    }
+  ]
+}
